@@ -1,28 +1,40 @@
 import React from 'react';
-
+import { format } from 'date-fns';
 import './MovieCard.css';
-import coverImage from '../../image/cover.png';
 
-const MovieCard = () => {
+const renderStars = (rating) => {
+  const stars = Math.round(rating / 2);
+  return Array.from({ length: 5 }, (_, i) => (
+    <span key={i} style={{ color: i < stars ? 'gold' : 'gray', fontSize: '18px' }}>
+      ★
+    </span>
+  ));
+};
+
+const MovieCard = ({ movie }) => {
+  const posterUrl = movie.poster_path
+    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+    : 'https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg';
+  const formattedDate = movie.release_date ? format(new Date(movie.release_date), 'dd MMMM yyyy') : 'Дата неизвестна';
+  const truncateText = (text, maxLength) => {
+    if (text.length <= maxLength) return text;
+    return text.slice(0, text.lastIndexOf(' ', maxLength)) + '...';
+  };
+
   return (
     <div className="movie-card">
       <div className="cover">
-        <img src={coverImage} alt="Movie Poster" className="image" />
+        <img src={posterUrl} alt={movie.title} className="image" />
       </div>
       <div className="details">
-        <h3 className="title">The way back</h3>
-        <p className="date">March 5, 2020 </p>
-        <div className="genre">
-          <span className="genre-tag">Action</span>
-          <span className="genre-tag">Drama</span>
+        <h3 className="title">{movie.title}</h3>
+        <p className="date">{formattedDate}</p>
+        <p className="description">{truncateText(movie.overview, 100)}</p>
+        <div className="rating">
+          {renderStars(movie.vote_average)} ({movie.vote_average})
         </div>
-        <p className="description">
-          A former basketball all-star, who has lost his wife and family foundation in a struggle with addiction
-          attempts to regain his soul and salvation by becoming the coach of a disparate ethnically mixed high ...
-        </p>
-        <div className="rating">⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐</div>
       </div>
-      <div className="circle-rating">6.6</div>
+      <div className="circle-rating">{movie.vote_average}</div>
     </div>
   );
 };

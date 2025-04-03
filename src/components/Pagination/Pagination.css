@@ -3,14 +3,14 @@
   justify-content: center;
   align-items: center;
   gap: 10px;
-  margin-top: 20px;
+  margin-top: 35px;
 }
 
 .page,
 .arrow {
   padding: 8px 12px;
   font-size: 16px;
-  border: 1px solid #ccc;
+  border: none;
   background: white;
   cursor: pointer;
   border-radius: 5px;
@@ -19,4 +19,5 @@
 .page:hover,
 .arrow:hover {
   background: DodgerBlue;
+  color: #ffffff;
 }
