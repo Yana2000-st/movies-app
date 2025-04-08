@@ -1,7 +1,7 @@
 import React from 'react';
-import { format } from 'date-fns';
 import './MovieCard.css';
-import { Rate } from 'antd'; //Звездочки из библиотеки
+import { Rate } from 'antd';
+import { format } from 'date-fns';
 
 // {
 //   title: "The way back",
@@ -12,12 +12,15 @@ import { Rate } from 'antd'; //Звездочки из библиотеки
 // }
 
 const MovieCard = ({ movie }) => {
+  // Если есть постер — показываю его, иначе — пустую картинку
   const posterUrl = movie.poster_path
     ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
     : 'https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg';
 
+  // Форматирую дату, если она есть, иначе дата неизвестна
   const formattedDate = movie.release_date ? format(new Date(movie.release_date), 'dd MMMM yyyy') : 'Дата неизвестна';
 
+  // Обрезаю описание фильма
   const truncateText = (text, maxLength) => {
     if (!text) {
       return '';
@@ -33,7 +36,6 @@ const MovieCard = ({ movie }) => {
       <div className="cover">
         <img src={posterUrl} alt={movie.title} className="image" />
       </div>
-
       <div className="info-wrapper">
         <div className="info-top">
           <h3 className="title">{movie.title}</h3>
