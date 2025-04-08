@@ -89,17 +89,6 @@
 }
 
 @media (max-width: 767px) {
-  /* .movie-card {
-    display: grid;
-    grid-template-columns: 100px 1fr;
-    grid-template-rows: auto auto auto;
-    grid-template-areas:
-      "cover top"
-      "desc desc"
-      "rating rating";
-    gap: 10px;
-  } */
-
   .cover {
     grid-area: cover;
     width: 100px;
@@ -136,7 +125,6 @@
 
 @media (min-width: 768px) {
   .cover {
-    /* width: 33%; */
     max-width: 180px;
     height: 100%;
   }

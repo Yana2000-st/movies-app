@@ -1,12 +1,10 @@
-/* global process */
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Input } from 'antd';
 
 import MovieCard from '../MovieCard/MovieCard';
 import './MovieList.css';
 
-const API_KEY = process.env.REACT_APP_API_KEY;
-const { Search } = Input;
+const API_KEY = '0a1e72874ef8be4eaa52cdce332f473e';
 
 const MovieList = () => {
   const [movies, setMovies] = useState([]);
@@ -28,7 +26,7 @@ const MovieList = () => {
 
   return (
     <div className="movie-list">
-      <Search
+      <Input.Search
         placeholder="Type to search..."
         size="large"
         onSearch={(value) => setSearchQuery(value)}
