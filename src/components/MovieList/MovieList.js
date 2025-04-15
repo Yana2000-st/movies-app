@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Row, Col, Input, Alert, Spin, Pagination } from 'antd';
+import { debounce } from 'lodash';
 
 import MovieCard from '../MovieCard/MovieCard';
 import './MovieList.css';
@@ -8,14 +9,16 @@ const API_KEY = '0a1e72874ef8be4eaa52cdce332f473e';
 
 const MovieList = () => {
   const [movies, setMovies] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('return');
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [isOnline, setIsOnline] = useState(true);
   const [page, setPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
 
-  // Загрузка фильмов
+  const pageSize = 6;
+
+  // Загружаю фильмы
   const fetchMovies = async (query, pageNumber) => {
     try {
       setLoading(true);
@@ -24,8 +27,14 @@ const MovieList = () => {
         `https://api.themoviedb.org/3/search/movie?query=${query}&api_key=${API_KEY}&page=${pageNumber}`
       );
       const data = await response.json();
-      setMovies(data.results.slice(0, 6));
-      setTotalResults(data.total_results);
+
+      if (data.results && data.results.length > 0) {
+        setMovies(data.results.slice(0, pageSize));
+        setTotalResults(data.total_results);
+      } else {
+        setMovies([]);
+        setTotalResults(0);
+      }
     } catch (error) {
       setError('Не удалось загрузить фильмы');
     } finally {
@@ -33,15 +42,14 @@ const MovieList = () => {
     }
   };
 
-  // Проверка интернетa
+  // Проверка интернета
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-
-    setIsOnline(navigator.onLine); // при старте
+    setIsOnline(navigator.onLine);
 
     return () => {
       window.removeEventListener('online', handleOnline);
@@ -49,18 +57,30 @@ const MovieList = () => {
     };
   }, []);
 
-  // Загружаю фильмы
+  // Загружаю фильмы, когда меняется запрос, страница
   useEffect(() => {
-    if (isOnline) {
+    if (isOnline && searchQuery.trim() !== '') {
       fetchMovies(searchQuery, page);
+    } else {
+      setMovies([]);
+      setTotalResults(0);
     }
   }, [searchQuery, page, isOnline]);
+
+  // Debounce: с паузой перед отправкой запроса
+  const debouncedSearch = useCallback(
+    debounce((value) => {
+      setPage(1);
+      setSearchQuery(value);
+    }, 800),
+    []
+  );
 
   return (
     <div className="movie-list">
       {!isOnline && (
         <Alert
-          message="Нет подключения к интернету"
+          message="Проверьте подключение к интернету"
           type="error"
           showIcon
           style={{ marginBottom: 20, textAlign: 'center' }}
@@ -69,13 +89,10 @@ const MovieList = () => {
 
       {error && <Alert message={error} type="error" showIcon style={{ marginBottom: 20, textAlign: 'center' }} />}
 
-      <Input.Search
+      <Input
         placeholder="Type to search..."
         size="large"
-        onSearch={(value) => {
-          setSearchQuery(value);
-          setPage(1);
-        }}
+        onChange={(e) => debouncedSearch(e.target.value)}
         style={{ maxWidth: 1000, margin: '0 auto 32px', display: 'block' }}
       />
 
@@ -85,6 +102,10 @@ const MovieList = () => {
         </div>
       ) : (
         <>
+          {movies.length === 0 && searchQuery && !loading && (
+            <Alert message="Фильмы не найдены" type="info" style={{ textAlign: 'center', marginBottom: 20 }} />
+          )}
+
           <Row gutter={[16, 16]} justify="center">
             {movies.map((movie) => (
               <Col key={movie.id} xs={24} md={12}>
@@ -92,15 +113,18 @@ const MovieList = () => {
               </Col>
             ))}
           </Row>
-          <div className="paginationContainer">
-            <Pagination
-              current={page}
-              pageSize={6}
-              total={totalResults}
-              onChange={(newPage) => setPage(newPage)}
-              showSizeChanger={false}
-            />
-          </div>
+
+          {totalResults > pageSize && (
+            <div className="paginationContainer">
+              <Pagination
+                current={page}
+                pageSize={pageSize}
+                total={totalResults}
+                onChange={(newPage) => setPage(newPage)}
+                showSizeChanger={false}
+              />
+            </div>
+          )}
         </>
       )}
     </div>
