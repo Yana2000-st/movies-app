@@ -7,7 +7,7 @@ import './MovieList.css';
 
 const API_KEY = '0a1e72874ef8be4eaa52cdce332f473e';
 
-const MovieList = () => {
+const MovieList = ({ guestSessionId }) => {
   const [movies, setMovies] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
@@ -18,7 +18,6 @@ const MovieList = () => {
 
   const pageSize = 6;
 
-  // Загружаю фильмы
   const fetchMovies = async (query, pageNumber) => {
     try {
       setLoading(true);
@@ -42,7 +41,6 @@ const MovieList = () => {
     }
   };
 
-  // Проверка интернета
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
@@ -57,7 +55,6 @@ const MovieList = () => {
     };
   }, []);
 
-  // Загружаю фильмы, когда меняется запрос, страница
   useEffect(() => {
     if (isOnline && searchQuery.trim() !== '') {
       fetchMovies(searchQuery, page);
@@ -67,7 +64,6 @@ const MovieList = () => {
     }
   }, [searchQuery, page, isOnline]);
 
-  // Debounce: с паузой перед отправкой запроса
   const debouncedSearch = useCallback(
     debounce((value) => {
       setPage(1);
@@ -109,7 +105,7 @@ const MovieList = () => {
           <Row gutter={[16, 16]} justify="center">
             {movies.map((movie) => (
               <Col key={movie.id} xs={24} md={12}>
-                <MovieCard movie={movie} />
+                <MovieCard movie={movie} guestSessionId={guestSessionId} />
               </Col>
             ))}
           </Row>
