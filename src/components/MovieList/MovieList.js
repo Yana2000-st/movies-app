@@ -8,19 +8,19 @@ import './MovieList.css';
 const API_KEY = '0a1e72874ef8be4eaa52cdce332f473e';
 
 const MovieList = ({ guestSessionId }) => {
-  const [movies, setMovies] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [isOnline, setIsOnline] = useState(true);
-  const [page, setPage] = useState(1);
-  const [totalResults, setTotalResults] = useState(0);
+  const [movies, setMovies] = useState([]); //массив всех найденных фильмов
+  const [searchQuery, setSearchQuery] = useState(''); // Поиск
+  const [loading, setLoading] = useState(false); //Загрузка фильма
+  const [error, setError] = useState(''); //Сообщение об ошбике
+  const [isOnline, setIsOnline] = useState(true); //Подключен ли интернет
+  const [page, setPage] = useState(1); //Текущая страница фильмов
+  const [totalResults, setTotalResults] = useState(0); //Все страницы фильмов
 
-  const pageSize = 6;
+  const pageSize = 6; //По макету показываю 6 фильмов
 
   const fetchMovies = async (query, pageNumber) => {
     try {
-      setLoading(true);
+      setLoading(true); //Показываю спинер, пока загружаются фильмы
       setError('');
       const response = await fetch(
         `https://api.themoviedb.org/3/search/movie?query=${query}&api_key=${API_KEY}&page=${pageNumber}`
@@ -37,10 +37,10 @@ const MovieList = ({ guestSessionId }) => {
     } catch (error) {
       setError('Не удалось загрузить фильмы');
     } finally {
-      setLoading(false);
+      setLoading(false); //В любом случае убираю спинер
     }
   };
-
+  //Проверка на интернет
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
@@ -54,7 +54,7 @@ const MovieList = ({ guestSessionId }) => {
       window.removeEventListener('offline', handleOffline);
     };
   }, []);
-
+  // Загружаю фильмы при изменении поиска или страницы
   useEffect(() => {
     if (isOnline && searchQuery.trim() !== '') {
       fetchMovies(searchQuery, page);
@@ -63,7 +63,7 @@ const MovieList = ({ guestSessionId }) => {
       setTotalResults(0);
     }
   }, [searchQuery, page, isOnline]);
-
+  //Задержка при наборе текста
   const debouncedSearch = useCallback(
     debounce((value) => {
       setPage(1);

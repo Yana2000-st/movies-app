@@ -8,7 +8,7 @@ import './MovieCard.css';
 const API_KEY = '0a1e72874ef8be4eaa52cdce332f473e';
 
 const MovieCard = ({ movie, guestSessionId }) => {
-  const genresList = useContext(GenresContext);
+  const genresList = useContext(GenresContext); // Получаею список жанров из контекста
 
   const posterUrl = movie.poster_path
     ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
@@ -19,9 +19,10 @@ const MovieCard = ({ movie, guestSessionId }) => {
   const truncateText = (text, maxLength) => {
     if (!text) return '';
     if (text.length <= maxLength) return text;
-    return text.slice(0, text.lastIndexOf(' ', maxLength)) + '...';
+    const cutIndex = text.lastIndexOf(' ', maxLength);
+    return text.slice(0, cutIndex) + '...';
   };
-
+  // Отправляю оценку фильма
   const rateMovie = async (value) => {
     try {
       await fetch(
@@ -44,14 +45,18 @@ const MovieCard = ({ movie, guestSessionId }) => {
     if (vote < 7) return '#E9D100';
     return '#66E900';
   };
-
+  // Преобразую id жанров в названия
   const getGenreNames = (ids) => {
-    return ids
-      .map((id) => {
-        const genre = genresList.find((g) => g.id === id);
-        return genre ? genre.name : null;
-      })
-      .filter(Boolean);
+    const names = [];
+
+    for (let id of ids) {
+      const genre = genresList.find((g) => g.id === id);
+      if (genre) {
+        names.push(genre.name);
+      }
+    }
+
+    return names;
   };
 
   return (

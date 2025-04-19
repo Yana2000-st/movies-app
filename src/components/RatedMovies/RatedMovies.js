@@ -6,11 +6,11 @@ import MovieCard from '../MovieCard/MovieCard';
 const API_KEY = '0a1e72874ef8be4eaa52cdce332f473e';
 
 const RatedMovies = ({ guestSessionId }) => {
-  const [ratedMovies, setRatedMovies] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [page, setPage] = useState(1);
-  const [totalResults, setTotalResults] = useState(0);
+  const [ratedMovies, setRatedMovies] = useState([]); //Оцененные фильмы
+  const [loading, setLoading] = useState(false); //Загрузка фильмов
+  const [error, setError] = useState(''); //Текст ошибок
+  const [page, setPage] = useState(1); //Текущая страница
+  const [totalResults, setTotalResults] = useState(0); //Сколько оцененных фильмов
   const pageSize = 6;
 
   useEffect(() => {
