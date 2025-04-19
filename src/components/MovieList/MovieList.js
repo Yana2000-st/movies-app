@@ -71,6 +71,12 @@ const MovieList = ({ guestSessionId }) => {
     }, 800),
     []
   );
+  // Отменяю отложенный вызов debounce
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, []);
 
   return (
     <div className="movie-list">
